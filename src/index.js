@@ -38,7 +38,36 @@ const getDiff = (path1, path2) => {
       return acc;
     }, [])
     .join('\n');
-  console.log(`{\n${diffs}\n}`);
+  const resultDiffString = `{\n${diffs}\n}`;
+  console.log(resultDiffString);
+  return resultDiffString;
 };
 
 export default getDiff;
+
+/*
+const expectedResult = `
+{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
+
+const example = `{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}`;
+console.log('expectedResult', expectedResult);
+const string = getDiff(
+  '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1.json',
+'/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2.json');
+console.log('getDiff', string);
+console.log('is true?', string === example);
+*/
