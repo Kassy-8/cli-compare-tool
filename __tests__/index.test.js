@@ -17,6 +17,9 @@ const expectedResult = `{
   + verbose: true
 }`;
 
-test('gendiff', () => {
+test('test json files', () => {
   expect(getDiff(getFixturePath('file1.json'), getFixturePath('file2.json'))).toEqual(expectedResult);
+});
+test('test yaml files', () => {
+  expect(getDiff(getFixturePath('file1.yaml'), getFixturePath('file2.yaml'))).toEqual(expectedResult);
 });

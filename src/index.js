@@ -1,53 +1,41 @@
-import path from 'path';
-import fs from 'fs';
 import _ from 'lodash';
-
-const getFileData = (pathName) => {
-  const fullPath = path.resolve(process.cwd(), pathName);
-  const data = fs.readFileSync(fullPath).toString();
-  return data;
-};
+import parseData from './parser.js';
 
 const getDiff = (path1, path2) => {
-  const fileData1 = getFileData(path1);
-  const fileData2 = getFileData(path2);
-  const object1 = JSON.parse(fileData1);
-  const object2 = JSON.parse(fileData2);
+  const object1 = parseData(path1);
+  const object2 = parseData(path2);
   const keys = _.union(Object.keys(object1), Object.keys(object2));
+  const diffSigns = ['+', '-', ' '];
+  const [signOfAdd, signOfDelete, signOfNoChange] = diffSigns;
+  // filler and space Count can be put into function like arguments with default values and futher will used with depth-arguments for nested objects
+  const filler = ' ';
+  const spaceCount = 2;
+  const depth = 1; // delete after function expand for nested object
+  const innerIdent = filler.repeat(spaceCount * depth);
+  const endBracerIdent = filler.repeat(spaceCount * (depth - 1));
   const diffs = _.sortBy(keys)
-    .reduce((acc, key) => {
-    // поменять константу на переменную?
+    .map((key) => {
       if (!_.has(object1, key)) {
-        const diffString = `  + ${key}: ${object2[key]}`;
-        acc.push(diffString);
-        return acc;
+        return `${innerIdent}${signOfAdd} ${key}: ${object2[key]}`;
       }
       if (!_.has(object2, key)) {
-        const diffString = `  - ${key}: ${object1[key]}`;
-        acc.push(diffString);
-        return acc;
+        return `${innerIdent}${signOfDelete} ${key}: ${object1[key]}`;
       }
       if (object1[key] !== object2[key]) {
-        const diffString = `  - ${key}: ${object1[key]}`;
-        const diffString2 = `  + ${key}: ${object2[key]}`;
-        acc.push(diffString, diffString2);
-        return acc;
+        return `${innerIdent}${signOfDelete} ${key}: ${object1[key]}\n${innerIdent}${signOfAdd} ${key}: ${object2[key]}`;
       }
-      const diffString = `    ${key}: ${object1[key]}`;
-      acc.push(diffString);
-      return acc;
-    }, [])
-    .join('\n');
-  const resultDiffString = `{\n${diffs}\n}`;
-  console.log(resultDiffString);
-  return resultDiffString;
+      return `${innerIdent}${signOfNoChange} ${key}: ${object1[key]}`;
+    });
+  return [
+    '{',
+    ...diffs,
+    `${endBracerIdent}}`,
+  ].join('\n');
 };
 
 export default getDiff;
 
-/*
-const expectedResult = `
-{
+const expectedResult = `{
   - follow: false
     host: hexlet.io
   - proxy: 123.234.53.22
@@ -64,10 +52,8 @@ const example = `{
   + timeout: 20
   + verbose: true
 }`;
-console.log('expectedResult', expectedResult);
-const string = getDiff(
-  '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1.json',
-'/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2.json');
+
+const string = getDiff('/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1.json', '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2.json');
 console.log('getDiff', string);
-console.log('is true?', string === example);
-*/
+console.log('expectedResult', expectedResult);
+console.log('is true?', string === expectedResult);
