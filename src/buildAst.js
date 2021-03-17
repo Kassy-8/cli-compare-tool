@@ -43,6 +43,7 @@ const buildAst = (object1, object2) => {
   return diff;
 };
 
-const example = buildAst(object11, object21);
-console.log(JSON.stringify(example));
 export default buildAst;
+
+const example = buildAst(object11, object21);
+console.log(Array.isArray(example));
