@@ -8,35 +8,41 @@ const object21 = parseData(path2);
 
 const buildAst = (object1, object2) => {
   const keys = _.union(Object.keys(object1), Object.keys(object2));
-  console.log(keys);
   const diff = _.sortBy(keys)
-    .reduce((acc, currentKey) => {
-      const key = currentKey;
+    .map((key) => {
+      const currentValue1 = object1[key];
+      const currentValue2 = object2[key];
       let value;
       let type;
       if (!_.has(object1, key)) {
-        value = object2[key];
+        value = currentValue2;
         type = 'added';
       } else if (!_.has(object2, key)) {
-        value = object1[key];
+        value = currentValue1;
         type = 'deleted';
-      } else if (object1[key] !== object2[key]) {
-        value = (_.isPlainObject(object1) && _.isPlainObject(object2[key]))
-          ? buildAst(object1[key], object2[key])
-          : [object1[key], object2[key]];
-        type = 'altered';
-      } else if (object1[key] === object2[key]) {
-        value = object1[key];
-        type = 'unaltered';
+      } else if (currentValue1 === currentValue2) {
+        value = currentValue1;
+        type = 'unchanged';
+      } else if (currentValue1 !== currentValue2) {
+        type = 'changed';
+        if (_.isPlainObject(currentValue1) && _.isPlainObject(currentValue2)) {
+          value = buildAst(currentValue1, currentValue2);
+        } else {
+          const valueBefore = currentValue1;
+          const valueAfter = currentValue2;
+          return {
+            key,
+            valueBefore,
+            valueAfter,
+            type,
+          };
+        }
       }
-      console.log(key, value, type);
-      return [
-        ...acc,
-        { key, value, type },
-      ];
-    }, []);
+      return { key, value, type };
+    });
   return diff;
 };
 
 const example = buildAst(object11, object21);
 console.log(JSON.stringify(example));
+export default buildAst;
