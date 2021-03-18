@@ -45,5 +45,7 @@ const buildAst = (object1, object2) => {
 
 export default buildAst;
 
+/*
 const example = buildAst(object11, object21);
 console.log(Array.isArray(example));
+*/

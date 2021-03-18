@@ -8,37 +8,45 @@ const object11 = parseData(path1);
 const object21 = parseData(path2);
 const example = buildAst(object11, object21);
 
-const formatDiff = (diffObject, filler = ' ', spaceCount = 2) => {
-  console.log('diffObject', diffObject);
-  console.log('isArray?', Array.isArray(diffObject));
-  const formatDiffRecursive = (differences, depth) => {
-    // console.log('differences', differences);
-    // console.log('differences isArray?', Array.isArray(differences));
+const formatDiff = (differences, filler = ' ', spaceCount = 2) => {
+  const formatDiffRecursive = (diffObject, depth) => {
     const signs = {
       added: '+',
-      delete: '-',
-      unchnaged: ' ',
+      deleted: '-',
+      unchanged: ' ',
     };
     const innerIdent = filler.repeat(spaceCount * depth);
     const endBracerIdent = filler.repeat(spaceCount * (depth - 1));
-    const diffs = differences
-      .map(({ key, value, type = undefined, valueBefore, valueAfter }) => {
+
+    if (_.isPlainObject(diffObject)) {
+      const rows = Object.entries(diffObject)
+        .map(([key, value]) => `${innerIdent}${signs.unchnaged} ${key}: ${value}`);
+      return [
+        '{',
+        ...rows,
+        `${endBracerIdent}}`,
+      ].join('\n');
+    }
+
+    const diffs = diffObject
+      .map(({ key, value, type, valueBefore, valueAfter }) => {
         let diffString;
-        if (value !== undefined && !_.isPlainObject(value)) {
-          diffString = `${innerIdent}${signs[type]} ${key}: ${value}`;
-        }
-        if (value !== undefined && _.isPlainObject(value)) {
-          diffString = `${innerIdent}${signs[type]} ${key}: ${formatDiffRecursive(value)}`;
-        }
         if (type === 'changed') {
-          const currentValueBefore = (_.isPlainObject(valueBefore))
-            ? formatDiffRecursive(valueBefore)
+          const currentValueBefore = (_.isObject(valueBefore))
+            ? formatDiffRecursive(valueBefore, depth + 1)
             : valueBefore;
-          const currentValueAfter = (_.isPlainObject(valueAfter))
+          const currentValueAfter = (_.isObject(valueAfter, depth + 1))
             ? formatDiffRecursive(valueAfter)
             : valueAfter;
-          diffString = `${innerIdent}${signs[type]} ${key}: ${currentValueBefore}\n${innerIdent}${signs[type]} ${key}: ${currentValueAfter}`;
+          diffString = `${innerIdent}${signs.deleted} ${key}: ${currentValueBefore}\n${innerIdent}${signs[type]} ${key}: ${currentValueAfter}`;
         }
+        if (!_.isPlainObject(value)) {
+          diffString = `${innerIdent}${signs.added} ${key}: ${value}`;
+        }
+        if (_.isPlainObject(value)) {
+          diffString = `${innerIdent}${signs[type]} ${key}: ${formatDiffRecursive(value, depth + 1)}`;
+        }
+
         return diffString;
       });
     const result = [
@@ -49,13 +57,8 @@ const formatDiff = (diffObject, filler = ' ', spaceCount = 2) => {
     return result;
   };
 
-  return formatDiffRecursive(diffObject, 1);
+  return formatDiffRecursive(differences, 1);
 };
 
 const test = formatDiff(example);
 console.log(test);
-/*
-map не работает, потому что когда в вэлью один ребенок
-я добилась чтобы это был не массив, а объект. А с объектом рекурсивно функция не срабатывает
-мэп ждет массива. Т.о. надо в билд аст вернуть массив даже в случае единичного объекта
-*/
