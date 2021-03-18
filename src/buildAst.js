@@ -19,7 +19,7 @@ const buildAst = (object1, object2) => {
         type = 'added';
       } else if (!_.has(object2, key)) {
         value = currentValue1;
-        type = 'deleted';
+        type = 'removed';
       } else if (currentValue1 === currentValue2) {
         value = currentValue1;
         type = 'unchanged';
@@ -28,7 +28,7 @@ const buildAst = (object1, object2) => {
           type = 'unchanged';
           value = buildAst(currentValue1, currentValue2);
         } else {
-          type = 'changed';
+          type = 'update';
           const valueBefore = currentValue1;
           const valueAfter = currentValue2;
           return {

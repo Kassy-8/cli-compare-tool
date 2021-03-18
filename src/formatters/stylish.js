@@ -8,11 +8,13 @@ const object11 = parseData(path1);
 const object21 = parseData(path2);
 const example = buildAst(object11, object21);
 */
+
+// update name differences, bad name
 const stylish = (differences, filler = ' ', spaceCount = 2) => {
   const formatDiffRecursive = (diffObject, depth) => {
     const signs = {
       added: '+',
-      deleted: '-',
+      removed: '-',
       unchanged: ' ',
     };
     const innerIdent = filler.repeat(spaceCount * depth);
@@ -26,25 +28,24 @@ const stylish = (differences, filler = ' ', spaceCount = 2) => {
             : value;
           return `${innerIdent}${signs.unchanged} ${key}: ${currentValue}`;
         });
-      const resultForObject = [
+      return [
         '{',
         ...rows,
         `${endBracerIdent}}`,
       ].join('\n');
-      return resultForObject;
     }
 
     const diffs = diffObject
-      .flatMap(({ key, value, type, valueBefore, valueAfter }) => {
+      .map(({ key, value, type, valueBefore, valueAfter }) => {
         let diffString;
-        if (type === 'changed') {
+        if (type === 'update') {
           const currentValueBefore = (_.isObject(valueBefore))
             ? formatDiffRecursive(valueBefore, depth + 2)
             : valueBefore;
           const currentValueAfter = (_.isObject(valueAfter, depth + 1))
             ? formatDiffRecursive(valueAfter, depth + 2)
             : valueAfter;
-          diffString = `${innerIdent}${signs.deleted} ${key}: ${currentValueBefore}\n${innerIdent}${signs.added} ${key}: ${currentValueAfter}`;
+          diffString = `${innerIdent}${signs.removed} ${key}: ${currentValueBefore}\n${innerIdent}${signs.added} ${key}: ${currentValueAfter}`;
         } else if (!_.isObject(value)) {
           diffString = `${innerIdent}${signs[type]} ${key}: ${value}`;
         } else if (_.isObject(value)) {
@@ -64,6 +65,9 @@ const stylish = (differences, filler = ' ', spaceCount = 2) => {
 };
 
 export default stylish;
+
+// Anonim function in module scope, its name unnecessary
+
 /*
 const test = formatDiff(example);
 console.log(test);
