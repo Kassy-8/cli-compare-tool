@@ -1,11 +1,11 @@
 import _ from 'lodash';
-import parseData from './parser.js';
-
+// import parseData from './parser.js';
+/*
 const path1 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1Nested.json';
 const path2 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2Nested.json';
 const object11 = parseData(path1);
 const object21 = parseData(path2);
-
+*/
 const buildAst = (object1, object2) => {
   const keys = _.union(Object.keys(object1), Object.keys(object2));
   const diff = _.sortBy(keys)
@@ -24,10 +24,11 @@ const buildAst = (object1, object2) => {
         value = currentValue1;
         type = 'unchanged';
       } else if (currentValue1 !== currentValue2) {
-        type = 'changed';
         if (_.isPlainObject(currentValue1) && _.isPlainObject(currentValue2)) {
+          type = 'unchanged';
           value = buildAst(currentValue1, currentValue2);
         } else {
+          type = 'changed';
           const valueBefore = currentValue1;
           const valueAfter = currentValue2;
           return {
@@ -44,8 +45,7 @@ const buildAst = (object1, object2) => {
 };
 
 export default buildAst;
-
 /*
 const example = buildAst(object11, object21);
-console.log(Array.isArray(example));
+console.log(JSON.stringify(example));
 */
