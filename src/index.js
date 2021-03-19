@@ -2,6 +2,7 @@ import parseData from './parser.js';
 import buildAst from './buildAst.js';
 import stylish from './formatters/stylish.js';
 import plain from './formatters/plain.js';
+import json from './formatters/json.js';
 
 const getFormattedDiff = (diffObject, outputFormat) => {
   switch (outputFormat) {
@@ -9,6 +10,8 @@ const getFormattedDiff = (diffObject, outputFormat) => {
       return stylish(diffObject);
     case 'plain':
       return plain(diffObject);
+    case 'json':
+      return json(diffObject);
     default:
       throw new Error('unknown output format');
   }
