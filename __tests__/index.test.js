@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { test, expect, beforeAll } from '@jest/globals';
-import getDiff from '../src/index.js';
+import genDiff from '../src/index.js';
 
 let jsonFile1;
 let jsonFile2;
@@ -76,21 +76,21 @@ Property 'group2' was removed
 Property 'group3' was added with value: [complex value]`;
 
 test('json files with stylish format', () => {
-  expect(getDiff(jsonFile1, jsonFile2, 'stylish')).toEqual(resultForStylishFormat);
+  expect(genDiff(jsonFile1, jsonFile2, 'stylish')).toEqual(resultForStylishFormat);
 });
 test('yaml files stylish format', () => {
-  expect(getDiff(yamlFile1, yamlFile2, 'stylish')).toEqual(resultForStylishFormat);
+  expect(genDiff(yamlFile1, yamlFile2, 'stylish')).toEqual(resultForStylishFormat);
 });
 test('json files with plain format', () => {
-  expect(getDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultPlainFormat);
+  expect(genDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultPlainFormat);
 });
 test('yaml files with plain format', () => {
-  expect(getDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultPlainFormat);
+  expect(genDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultPlainFormat);
 });
 
 test('json files json output format is valid', () => {
-  expect(JSON.parse(getDiff(jsonFile1, jsonFile2, 'json'))).toBeTruthy();
+  expect(JSON.parse(genDiff(jsonFile1, jsonFile2, 'json'))).toBeTruthy();
 });
 test('json output format is valid', () => {
-  expect(JSON.parse(getDiff(yamlFile1, yamlFile2, 'json'))).toBeTruthy();
+  expect(JSON.parse(genDiff(yamlFile1, yamlFile2, 'json'))).toBeTruthy();
 });

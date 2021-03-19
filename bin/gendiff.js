@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import getDiff from '../src/index.js';
+import genDiff from '../src/index.js';
 
 const program = new Command();
 program
@@ -12,7 +12,7 @@ program
   .helpOption('-h, --help', 'output usage information')
   .action((filepath1, filepath2) => {
     const { format } = program.opts();
-    getDiff(filepath1, filepath2, format);
+    genDiff(filepath1, filepath2, format);
   });
 
 program.parse();
