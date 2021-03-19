@@ -1,17 +1,14 @@
 import path from 'path';
-import fs from 'fs';
 import yaml from 'js-yaml';
 
 // need to take out reading files function to another module, must be only parser
-export default (pathName) => {
-  const fullPath = path.resolve(process.cwd(), pathName);
-  const data = fs.readFileSync(fullPath).toString();
+export default (fileData, pathName) => {
   const format = path.extname(pathName);
   if (format === '.json') {
-    return JSON.parse(data);
+    return JSON.parse(fileData);
   }
   if (format === '.yaml') {
-    return yaml.load(data);
+    return yaml.load(fileData);
   }
   throw new Error('Unknown format, can\'t parse file');
 };

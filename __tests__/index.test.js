@@ -1,15 +1,24 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { test, expect } from '@jest/globals';
+import { test, expect, beforeAll } from '@jest/globals';
 import getDiff from '../src/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+let jsonFile1;
+let jsonFile2;
+let yamlFile1;
+let yamlFile2;
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-// посмотреть еще раз как строятся пути через функции,
-// можно ли сократить передачу в тесты до расширения
-const expectedResultStylish = `{
+beforeAll(() => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+  jsonFile1 = getFixturePath('file1.json');
+  jsonFile2 = getFixturePath('file2.json');
+  yamlFile1 = getFixturePath('file1.yaml');
+  yamlFile2 = getFixturePath('file2.yaml');
+});
+
+const resultForStylishFormat = `{
     common: {
       + follow: false
         setting1: Value 1
@@ -54,7 +63,7 @@ const expectedResultStylish = `{
     }
 }`;
 
-const expectedResultPlainFormat = `Property 'common.follow' was added with value: false
+const resultPlainFormat = `Property 'common.follow' was added with value: false
 Property 'common.setting2' was removed
 Property 'common.setting3' was updated. From true to null
 Property 'common.setting4' was added with value: 'blah blah'
@@ -65,47 +74,23 @@ Property 'group1.baz' was updated. From 'bas' to 'bars'
 Property 'group1.nest' was updated. From [complex value] to 'str'
 Property 'group2' was removed
 Property 'group3' was added with value: [complex value]`;
-/*
-const exampleForJson = [{"key":"common","value":
-[{"key":"follow","value":false,"type":"added"},
-{"key":"setting1","value":"Value 1","type":"unchanged"},
-{"key":"setting2","value":200,"type":"removed"},
-{"key":"setting3","valueBefore":true,"valueAfter":null,"type":"update"},
-{"key":"setting4","value":"blah blah","type":"added"},
-{"key":"setting5","value":{"key5":"value5"},"type":"added"},
-{"key":"setting6","value":[{"key":"doge","value":
-[{"key":"wow","valueBefore":"","valueAfter":"so much","type":"update"}],"type":"unchanged"},
-{"key":"key","value":"value","type":"unchanged"},
-{"key":"ops","value":"vops","type":"added"}],"type":"unchanged"}],"type":"unchanged"},
-{"key":"group1","value":[{"key":"baz","valueBefore":"bas","valueAfter":"bars","type":"update"},
-{"key":"foo","value":"bar","type":"unchanged"},{"key":"nest","valueBefore":{"key":"value"},
-"valueAfter":"str","type":"update"}],"type":"unchanged"},
-{"key":"group2","value":{"abc":12345,"deep":{"id":45}},"type":"removed"},
-{"key":"group3","value":{"deep":{"id":{"number":45}},"fee":100500},"type":"added"}];
-const expectedResultJSONFormat = JSON.stringify(exampleForJson);
-*/
-test('test nested json files with stylish format', () => {
-  expect(getDiff(getFixturePath('file1Nested.json'), getFixturePath('file2Nested.json'), 'stylish')).toEqual(expectedResultStylish);
+
+test('json files with stylish format', () => {
+  expect(getDiff(jsonFile1, jsonFile2, 'stylish')).toEqual(resultForStylishFormat);
 });
-test('test nested yaml files stylish format', () => {
-  expect(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'))).toEqual(expectedResultStylish);
+test('yaml files stylish format', () => {
+  expect(getDiff(yamlFile1, yamlFile2, 'stylish')).toEqual(resultForStylishFormat);
 });
-test('test json files with plain format', () => {
-  expect(getDiff(getFixturePath('file1Nested.json'), getFixturePath('file2Nested.json'), 'plain')).toEqual(expectedResultPlainFormat);
+test('json files with plain format', () => {
+  expect(getDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultPlainFormat);
 });
-test('test yaml files with plain format', () => {
-  expect(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'), 'plain')).toEqual(expectedResultPlainFormat);
+test('yaml files with plain format', () => {
+  expect(getDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultPlainFormat);
 });
-/*
-test('test json files with json format', () => {
-  expect(getDiff(getFixturePath('file1Nested.json'),
-  getFixturePath('file2Nested.json'), 'json')).toEqual(expectedResultJSONFormat);
+
+test('json files json output format is valid', () => {
+  expect(JSON.parse(getDiff(jsonFile1, jsonFile2, 'json'))).toBeTruthy();
 });
-test('test yaml files with json format', () => {
-  expect(getDiff(getFixturePath('file1Nested.yaml'),
-  getFixturePath('file2Nested.yaml'), 'json')).toEqual(expectedResultJSONFormat);
-});
-*/
-test('test with json.parse', () => {
-  expect(JSON.parse(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'), 'json'))).toBeTruthy();
+test('json output format is valid', () => {
+  expect(JSON.parse(getDiff(yamlFile1, yamlFile2, 'json'))).toBeTruthy();
 });

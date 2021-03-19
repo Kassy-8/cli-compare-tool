@@ -49,7 +49,7 @@ const tree = [
   "type":"added"}
 ];
 */
-// 'if' replace on switch?
+
 const makeDiffLine = (key, type, value, newValue = null) => {
   const makeDisplayedValue = (currentValue) => {
     if (_.isPlainObject(currentValue)) {
@@ -73,7 +73,7 @@ const makeDiffLine = (key, type, value, newValue = null) => {
   }
 };
 
-export default (differences) => {
+export default (diff) => {
   const formatDiffRecursive = (diffObject, path) => {
     const diffLines = diffObject
       .filter(({ value, type }) => !(type === 'unchanged' && !_.isObject(value)))
@@ -99,7 +99,7 @@ export default (differences) => {
 
     return diffLines;
   };
-  return formatDiffRecursive(differences, []);
+  return formatDiffRecursive(diff, []);
 };
 
 /*
