@@ -1,6 +1,6 @@
 import _ from 'lodash';
-// import parseData from './parser.js';
-// import buildAst from './buildAst.js';
+// import parseData from '../parser.js';
+// import buildAst from '../buildAst.js';
 /*
 const path1 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1Nested.json';
 const path2 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2Nested.json';
@@ -10,7 +10,7 @@ const example = buildAst(object11, object21);
 */
 
 // update name differences, bad name
-const stylish = (differences, filler = ' ', spaceCount = 2) => {
+export default (differences, filler = ' ', spaceCount = 2) => {
   const formatDiffRecursive = (diffObject, depth) => {
     const signs = {
       added: '+',
@@ -63,10 +63,6 @@ const stylish = (differences, filler = ' ', spaceCount = 2) => {
 
   return formatDiffRecursive(differences, 1);
 };
-
-export default stylish;
-
-// Anonim function in module scope, its name unnecessary
 
 /*
 const test = formatDiff(example);

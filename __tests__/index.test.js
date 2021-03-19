@@ -73,8 +73,8 @@ test('test nested yaml files stylish format', () => {
   expect(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'))).toEqual(expectedResultStylish);
 });
 test('test json files with plain format', () => {
-  expect(getDiff(getFixturePath('file1Nested.json'), getFixturePath('file2Nested.json'))).toEqual(expectedResultPlainFormat);
+  expect(getDiff(getFixturePath('file1Nested.json'), getFixturePath('file2Nested.json'), 'plain')).toEqual(expectedResultPlainFormat);
 });
 test('test yaml files with plain format', () => {
-  expect(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'))).toEqual(expectedResultPlainFormat);
+  expect(getDiff(getFixturePath('file1Nested.yaml'), getFixturePath('file2Nested.yaml'), 'plain')).toEqual(expectedResultPlainFormat);
 });
