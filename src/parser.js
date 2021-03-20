@@ -10,7 +10,7 @@ export default (fileData, pathName) => {
   if (format === '.json') {
     return JSON.parse(fileData);
   }
-  if (format === ('.yaml' || '.yml')) {
+  if (format === '.yml') {
     return yaml.load(fileData);
   }
   throw new Error('Unknown format for parsing');

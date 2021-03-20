@@ -14,8 +14,8 @@ beforeAll(() => {
   const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
   jsonFile1 = getFixturePath('file1.json');
   jsonFile2 = getFixturePath('file2.json');
-  yamlFile1 = getFixturePath('file1.yaml');
-  yamlFile2 = getFixturePath('file2.yaml');
+  yamlFile1 = getFixturePath('file1.yml');
+  yamlFile2 = getFixturePath('file2.yml');
 });
 
 const resultForStylishFormat = `{
