@@ -1,36 +1,31 @@
 import _ from 'lodash';
-// import parseData from './parser.js';
-/*
-const path1 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1Nested.json';
-const path2 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2Nested.json';
-const object11 = parseData(path1);
-const object21 = parseData(path2);
-*/
+
 const buildAst = (object1, object2) => {
-  const keys = _.union(Object.keys(object1), Object.keys(object2));
+  const keys = _.union(_.keys(object1), _.keys(object2));
   const diff = _.sortBy(keys)
     .map((key) => {
-      const currentValue1 = object1[key];
-      const currentValue2 = object2[key];
+      const valueFromObject1 = object1[key];
+      const valueFromObject2 = object2[key];
       let value;
       let type;
+
       if (!_.has(object1, key)) {
-        value = currentValue2;
+        value = valueFromObject2;
         type = 'added';
       } else if (!_.has(object2, key)) {
-        value = currentValue1;
+        value = valueFromObject1;
         type = 'removed';
-      } else if (currentValue1 === currentValue2) {
-        value = currentValue1;
+      } else if (valueFromObject1 === valueFromObject2) {
+        value = valueFromObject1;
         type = 'unchanged';
-      } else if (currentValue1 !== currentValue2) {
-        if (_.isPlainObject(currentValue1) && _.isPlainObject(currentValue2)) {
+      } else if (valueFromObject1 !== valueFromObject2) {
+        if (_.isPlainObject(valueFromObject1) && _.isPlainObject(valueFromObject2)) {
           type = 'unchanged';
-          value = buildAst(currentValue1, currentValue2);
+          value = buildAst(valueFromObject1, valueFromObject2);
         } else {
           type = 'update';
-          const valueBefore = currentValue1;
-          const valueAfter = currentValue2;
+          const valueBefore = valueFromObject1;
+          const valueAfter = valueFromObject2;
           return {
             key,
             valueBefore,
@@ -45,7 +40,3 @@ const buildAst = (object1, object2) => {
 };
 
 export default buildAst;
-/*
-const example = buildAst(object11, object21);
-console.log(JSON.stringify(example));
-*/

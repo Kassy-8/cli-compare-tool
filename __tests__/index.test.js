@@ -63,7 +63,7 @@ const resultForStylishFormat = `{
     }
 }`;
 
-const resultPlainFormat = `Property 'common.follow' was added with value: false
+const resultForPlainFormat = `Property 'common.follow' was added with value: false
 Property 'common.setting2' was removed
 Property 'common.setting3' was updated. From true to null
 Property 'common.setting4' was added with value: 'blah blah'
@@ -82,15 +82,15 @@ test('yaml files stylish format', () => {
   expect(genDiff(yamlFile1, yamlFile2, 'stylish')).toEqual(resultForStylishFormat);
 });
 test('json files with plain format', () => {
-  expect(genDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultPlainFormat);
+  expect(genDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultForPlainFormat);
 });
 test('yaml files with plain format', () => {
-  expect(genDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultPlainFormat);
+  expect(genDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultForPlainFormat);
 });
 
 test('json files json output format is valid', () => {
   expect(JSON.parse(genDiff(jsonFile1, jsonFile2, 'json'))).toBeTruthy();
 });
-test('json output format is valid', () => {
+test('yaml files json output format is valid', () => {
   expect(JSON.parse(genDiff(yamlFile1, yamlFile2, 'json'))).toBeTruthy();
 });

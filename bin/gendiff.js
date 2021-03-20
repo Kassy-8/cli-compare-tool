@@ -12,7 +12,7 @@ program
   .helpOption('-h, --help', 'output usage information')
   .action((filepath1, filepath2) => {
     const { format } = program.opts();
-    genDiff(filepath1, filepath2, format);
+    console.log(genDiff(filepath1, filepath2, format));
   });
 
 program.parse();

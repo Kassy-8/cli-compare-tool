@@ -1,24 +1,20 @@
 import _ from 'lodash';
-// import parseData from '../parser.js';
-// import buildAst from '../buildAst.js';
-/*
-const path1 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file1Nested.json';
-const path2 = '/home/catherine/Hexlet-projects/frontend-project-lvl2/__fixtures__/file2Nested.json';
-const object11 = parseData(path1);
-const object21 = parseData(path2);
-const example = buildAst(object11, object21);
-*/
 
-// update name differences, bad name
-export default (differences, filler = ' ', spaceCount = 2) => {
+const diffSigns = {
+  added: '+',
+  removed: '-',
+  unchanged: ' ',
+};
+
+const filler = ' ';
+const spaceCount = 2;
+
+export default (diffAst) => {
   const formatDiffRecursive = (diffObject, depth) => {
-    const signs = {
-      added: '+',
-      removed: '-',
-      unchanged: ' ',
-    };
     const innerIdent = filler.repeat(spaceCount * depth);
-    const endBracerIdent = filler.repeat((spaceCount * depth) - spaceCount);
+    const lastBracerIdent = filler.repeat((spaceCount * depth) - spaceCount);
+
+    const makeDiffRow = (key, type, value) => `${innerIdent}${diffSigns[type]} ${key}: ${value}`;
 
     if (_.isPlainObject(diffObject)) {
       const rows = Object.entries(diffObject)
@@ -26,18 +22,19 @@ export default (differences, filler = ' ', spaceCount = 2) => {
           const currentValue = (_.isPlainObject(value))
             ? formatDiffRecursive(value, depth + 2)
             : value;
-          return `${innerIdent}${signs.unchanged} ${key}: ${currentValue}`;
+          const typeForUnchangedObject = 'unchanged';
+          return makeDiffRow(key, typeForUnchangedObject, currentValue);
         });
       return [
         '{',
         ...rows,
-        `${endBracerIdent}}`,
+        `${lastBracerIdent}}`,
       ].join('\n');
     }
 
     const diffs = diffObject
       .map(({ key, value, type, valueBefore, valueAfter }) => {
-        let diffString;
+        let diffRow;
         if (type === 'update') {
           const currentValueBefore = (_.isObject(valueBefore))
             ? formatDiffRecursive(valueBefore, depth + 2)
@@ -45,26 +42,20 @@ export default (differences, filler = ' ', spaceCount = 2) => {
           const currentValueAfter = (_.isObject(valueAfter, depth + 1))
             ? formatDiffRecursive(valueAfter, depth + 2)
             : valueAfter;
-          diffString = `${innerIdent}${signs.removed} ${key}: ${currentValueBefore}\n${innerIdent}${signs.added} ${key}: ${currentValueAfter}`;
+          diffRow = `${makeDiffRow(key, 'removed', currentValueBefore)}\n${makeDiffRow(key, 'added', currentValueAfter)}`;
         } else if (!_.isObject(value)) {
-          diffString = `${innerIdent}${signs[type]} ${key}: ${value}`;
+          diffRow = makeDiffRow(key, type, value);
         } else if (_.isObject(value)) {
-          diffString = `${innerIdent}${signs[type]} ${key}: ${formatDiffRecursive(value, depth + 2)}`;
+          diffRow = makeDiffRow(key, type, formatDiffRecursive(value, depth + 2));
         }
-        return diffString;
+        return diffRow;
       });
-    const result = [
+    return [
       '{',
       ...diffs,
-      `${endBracerIdent}}`,
+      `${lastBracerIdent}}`,
     ].join('\n');
-    return result;
   };
 
-  return formatDiffRecursive(differences, 1);
+  return formatDiffRecursive(diffAst, 1);
 };
-
-/*
-const test = formatDiff(example);
-console.log(test);
-*/

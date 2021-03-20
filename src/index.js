@@ -32,6 +32,5 @@ export default (path1, path2, formatName = 'stylish') => {
   const object2 = parseData(data2, path2);
   const diffAst = buildAst(object1, object2);
   const formatedDiff = getFormattedDiff(diffAst, formatName);
-  console.log(formatedDiff);
   return formatedDiff;
 };

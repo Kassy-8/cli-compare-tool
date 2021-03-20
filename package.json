@@ -2,14 +2,14 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "type": "module",
-  "description": "[![Actions Status](https://github.com/Kassy-8/frontend-project-lvl2/workflows/hexlet-check/badge.svg)](https://github.com/Kassy-8/frontend-project-lvl2/actions)",
+  "description": "Command line utility for calculation differences between two data structures.",
   "main": "src/index.js",
   "jest": {
     "testEnvironment": "node",
     "transform": {}
   },
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest"
   },
   "bin": {
     "gendiff": "bin/gendiff.js"
