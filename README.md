@@ -56,7 +56,7 @@ gendiff file1.json file2.json
     .....
 }
 ```
-[![asciicast](https://asciinema.org/a/OSZlXbQJtmQPQbwBt2hhBPRV9.svg)](https://asciinema.org/a/OSZlXbQJtmQPQbwBt2hhBPRV9)
+[Example for stylish format](https://asciinema.org/a/OSZlXbQJtmQPQbwBt2hhBPRV9)
 
 Example for YAML-files, output format - plain:
 
@@ -70,7 +70,7 @@ Property 'common.setting5' was added with value: [complex value]
 ...
 ```
 
-[![asciicast](https://asciinema.org/a/eVzhc1jk5YeeIpc7AzSnoAmzH.svg)](https://asciinema.org/a/eVzhc1jk5YeeIpc7AzSnoAmzH)
+[Example for plain format](https://asciinema.org/a/eVzhc1jk5YeeIpc7AzSnoAmzH)
 
 Example for JSON-files, output format - JSON:
 ```
@@ -78,4 +78,4 @@ gendiff - f json file1.json file2.json
 
 [{"key":"common","type":"unchanged","value":[{"key":"follow","type":"added","value":false},{"key":"setting1","type":"unchanged","value":"Value 1"},{"key":"setting2","type":"removed","value":200},{"key":"setting3","type":"update","valueBefore":true,"valueAfter":null},{"key":"setting4","type":"added","value":"blah blah"},{"key":"setting5","type":"added","value":{"key5":"value5"}} ...]
 ```
-[![asciicast](https://asciinema.org/a/KbYJZVzu80GnmMIFqnGtyVF2T.svg)](https://asciinema.org/a/KbYJZVzu80GnmMIFqnGtyVF2T)
+[Example for json format](https://asciinema.org/a/KbYJZVzu80GnmMIFqnGtyVF2T)
