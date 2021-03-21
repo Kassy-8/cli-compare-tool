@@ -32,7 +32,7 @@ export default (diffAst) => {
       ].join('\n');
     }
 
-    const diffs = diffObject
+    const rows = diffObject
       .map(({
         key,
         value,
@@ -55,7 +55,7 @@ export default (diffAst) => {
       });
     return [
       '{',
-      ...diffs,
+      ...rows,
       `${lastBracerIdent}}`,
     ].join('\n');
   };
