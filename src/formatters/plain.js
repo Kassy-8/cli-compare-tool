@@ -19,7 +19,7 @@ const makeDiffRow = (key, type, value, newValue = null) => {
     case 'update':
       return `Property '${key}' was updated. From ${getDisplayFormat(value)} to ${getDisplayFormat(newValue)}`;
     default:
-      throw new Error('unknown type of difference');
+      throw new Error(`unknown type of difference: ${type}`);
   }
 };
 
@@ -45,7 +45,7 @@ export default (diffAst) => {
           case 'unchanged':
             return formatDiffPlainRecursive(value, currentKeyPath);
           default:
-            throw new Error('unknown type of difference');
+            throw new Error(`unknown type of difference: ${type}`);
         }
       })
       .join('\n');

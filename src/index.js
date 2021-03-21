@@ -21,7 +21,7 @@ const getFormattedDiff = (diffObject, outputFormat) => {
     case 'json':
       return json(diffObject);
     default:
-      throw new Error('unknown output format');
+      throw new Error(`unknown output format: ${outputFormat}`);
   }
 };
 

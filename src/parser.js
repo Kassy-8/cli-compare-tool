@@ -13,5 +13,5 @@ export default (fileData, pathName) => {
   if (format === ('.yml' || '.yaml')) {
     return yaml.load(fileData);
   }
-  throw new Error('Unknown format for parsing');
+  throw new Error(`Unknown format for parsing: ${format}`);
 };
