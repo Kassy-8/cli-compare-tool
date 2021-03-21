@@ -24,9 +24,9 @@ const buildAst = (object1, object2) => {
       }
       if (valueFromObject1 !== valueFromObject2) {
         if (_.isPlainObject(valueFromObject1) && _.isPlainObject(valueFromObject2)) {
-          const type = 'unchanged';
-          const value = buildAst(valueFromObject1, valueFromObject2);
-          return { key, type, value };
+          const type = 'parentNode';
+          const children = buildAst(valueFromObject1, valueFromObject2);
+          return { key, type, children };
         }
         const type = 'update';
         const valueBefore = valueFromObject1;

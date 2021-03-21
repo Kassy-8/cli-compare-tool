@@ -4,6 +4,7 @@ const diffSigns = {
   added: '+',
   removed: '-',
   unchanged: ' ',
+  parentNode: ' ',
 };
 
 const filler = ' ';
@@ -35,21 +36,25 @@ export default (diffAst) => {
     const rows = diffObject
       .map(({
         key,
-        value,
+        children,
         type,
+        value,
         valueBefore,
         valueAfter,
       }) => {
+        if (type === 'parentNode') {
+          return makeDiffRow(key, type, formatDiffStylishRecursive(children, depth + 2));
+        }
         if (type === 'update') {
-          const currentValueBefore = (_.isObject(valueBefore))
+          const currentValueBefore = (_.isPlainObject(valueBefore))
             ? formatDiffStylishRecursive(valueBefore, depth + 2)
             : valueBefore;
-          const currentValueAfter = (_.isObject(valueAfter, depth + 1))
+          const currentValueAfter = (_.isPlainObject(valueAfter, depth + 1))
             ? formatDiffStylishRecursive(valueAfter, depth + 2)
             : valueAfter;
           return `${makeDiffRow(key, 'removed', currentValueBefore)}\n${makeDiffRow(key, 'added', currentValueAfter)}`;
         }
-        return (_.isObject(value))
+        return (_.isPlainObject(value))
           ? makeDiffRow(key, type, formatDiffStylishRecursive(value, depth + 2))
           : makeDiffRow(key, type, value);
       });
