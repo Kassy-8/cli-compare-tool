@@ -24,10 +24,16 @@ const makeDiffRow = (key, type, value, newValue = null) => {
 };
 
 export default (diffAst) => {
-  const formatDiffRecursive = (diffObject, path) => {
+  const formatDiffPlainRecursive = (diffObject, path) => {
     const diffRows = diffObject
       .filter(({ value, type }) => !(type === 'unchanged' && !_.isObject(value)))
-      .map(({ key, value, type, valueBefore, valueAfter }) => {
+      .map(({
+        key,
+        value,
+        type,
+        valueBefore,
+        valueAfter,
+      }) => {
         const currentKeyPath = [...path, key];
         const keyPathName = currentKeyPath.join('.');
         switch (type) {
@@ -37,7 +43,7 @@ export default (diffAst) => {
           case 'update':
             return makeDiffRow(keyPathName, type, valueBefore, valueAfter);
           case 'unchanged':
-            return formatDiffRecursive(value, currentKeyPath);
+            return formatDiffPlainRecursive(value, currentKeyPath);
           default:
             throw new Error('unknown type of difference');
         }
@@ -46,5 +52,5 @@ export default (diffAst) => {
 
     return diffRows;
   };
-  return formatDiffRecursive(diffAst, []);
+  return formatDiffPlainRecursive(diffAst, []);
 };

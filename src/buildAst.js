@@ -3,38 +3,42 @@ import _ from 'lodash';
 const buildAst = (object1, object2) => {
   const keys = _.union(_.keys(object1), _.keys(object2));
   const diff = _.sortBy(keys)
-    .map((key) => {
+    .flatMap((key) => {
       const valueFromObject1 = object1[key];
       const valueFromObject2 = object2[key];
-      let value;
-      let type;
 
       if (!_.has(object1, key)) {
-        value = valueFromObject2;
-        type = 'added';
-      } else if (!_.has(object2, key)) {
-        value = valueFromObject1;
-        type = 'removed';
-      } else if (valueFromObject1 === valueFromObject2) {
-        value = valueFromObject1;
-        type = 'unchanged';
-      } else if (valueFromObject1 !== valueFromObject2) {
-        if (_.isPlainObject(valueFromObject1) && _.isPlainObject(valueFromObject2)) {
-          type = 'unchanged';
-          value = buildAst(valueFromObject1, valueFromObject2);
-        } else {
-          type = 'update';
-          const valueBefore = valueFromObject1;
-          const valueAfter = valueFromObject2;
-          return {
-            key,
-            valueBefore,
-            valueAfter,
-            type,
-          };
-        }
+        const value = valueFromObject2;
+        const type = 'added';
+        return { key, type, value };
       }
-      return { key, value, type };
+      if (!_.has(object2, key)) {
+        const value = valueFromObject1;
+        const type = 'removed';
+        return { key, type, value };
+      }
+      if (valueFromObject1 === valueFromObject2) {
+        const value = valueFromObject1;
+        const type = 'unchanged';
+        return { key, type, value };
+      }
+      if (valueFromObject1 !== valueFromObject2) {
+        if (_.isPlainObject(valueFromObject1) && _.isPlainObject(valueFromObject2)) {
+          const type = 'unchanged';
+          const value = buildAst(valueFromObject1, valueFromObject2);
+          return { key, type, value };
+        }
+        const type = 'update';
+        const valueBefore = valueFromObject1;
+        const valueAfter = valueFromObject2;
+        return {
+          key,
+          type,
+          valueBefore,
+          valueAfter,
+        };
+      }
+      return [];
     });
   return diff;
 };

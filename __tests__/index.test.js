@@ -1,22 +1,15 @@
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { test, expect, beforeAll } from '@jest/globals';
+import { test, expect } from '@jest/globals';
 import genDiff from '../src/index.js';
 
-let jsonFile1;
-let jsonFile2;
-let yamlFile1;
-let yamlFile2;
-
-beforeAll(() => {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-  jsonFile1 = getFixturePath('file1.json');
-  jsonFile2 = getFixturePath('file2.json');
-  yamlFile1 = getFixturePath('file1.yml');
-  yamlFile2 = getFixturePath('file2.yml');
-});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const jsonFile1 = getFixturePath('file1.json');
+const jsonFile2 = getFixturePath('file2.json');
+const yamlFile1 = getFixturePath('file1.yml');
+const yamlFile2 = getFixturePath('file2.yml');
 
 const resultForStylishFormat = `{
     common: {

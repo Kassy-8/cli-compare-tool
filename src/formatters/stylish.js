@@ -10,7 +10,7 @@ const filler = ' ';
 const spaceCount = 2;
 
 export default (diffAst) => {
-  const formatDiffRecursive = (diffObject, depth) => {
+  const formatDiffStylishRecursive = (diffObject, depth) => {
     const innerIdent = filler.repeat(spaceCount * depth);
     const lastBracerIdent = filler.repeat((spaceCount * depth) - spaceCount);
 
@@ -20,7 +20,7 @@ export default (diffAst) => {
       const rows = Object.entries(diffObject)
         .map(([key, value]) => {
           const currentValue = (_.isPlainObject(value))
-            ? formatDiffRecursive(value, depth + 2)
+            ? formatDiffStylishRecursive(value, depth + 2)
             : value;
           const typeForUnchangedObject = 'unchanged';
           return makeDiffRow(key, typeForUnchangedObject, currentValue);
@@ -33,22 +33,25 @@ export default (diffAst) => {
     }
 
     const diffs = diffObject
-      .map(({ key, value, type, valueBefore, valueAfter }) => {
-        let diffRow;
+      .map(({
+        key,
+        value,
+        type,
+        valueBefore,
+        valueAfter,
+      }) => {
         if (type === 'update') {
           const currentValueBefore = (_.isObject(valueBefore))
-            ? formatDiffRecursive(valueBefore, depth + 2)
+            ? formatDiffStylishRecursive(valueBefore, depth + 2)
             : valueBefore;
           const currentValueAfter = (_.isObject(valueAfter, depth + 1))
-            ? formatDiffRecursive(valueAfter, depth + 2)
+            ? formatDiffStylishRecursive(valueAfter, depth + 2)
             : valueAfter;
-          diffRow = `${makeDiffRow(key, 'removed', currentValueBefore)}\n${makeDiffRow(key, 'added', currentValueAfter)}`;
-        } else if (!_.isObject(value)) {
-          diffRow = makeDiffRow(key, type, value);
-        } else if (_.isObject(value)) {
-          diffRow = makeDiffRow(key, type, formatDiffRecursive(value, depth + 2));
+          return `${makeDiffRow(key, 'removed', currentValueBefore)}\n${makeDiffRow(key, 'added', currentValueAfter)}`;
         }
-        return diffRow;
+        return (_.isObject(value))
+          ? makeDiffRow(key, type, formatDiffStylishRecursive(value, depth + 2))
+          : makeDiffRow(key, type, value);
       });
     return [
       '{',
@@ -57,5 +60,5 @@ export default (diffAst) => {
     ].join('\n');
   };
 
-  return formatDiffRecursive(diffAst, 1);
+  return formatDiffStylishRecursive(diffAst, 1);
 };
