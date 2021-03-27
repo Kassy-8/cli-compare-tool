@@ -1,4 +1,5 @@
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 import path from 'path';
 import { test, expect } from '@jest/globals';
 import genDiff from '../src/index.js';
@@ -6,84 +7,41 @@ import genDiff from '../src/index.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-const jsonFile1 = getFixturePath('file1.json');
-const jsonFile2 = getFixturePath('file2.json');
-const yamlFile1 = getFixturePath('file1.yml');
-const yamlFile2 = getFixturePath('file2.yml');
 
-const resultForStylishFormat = `{
-    common: {
-      + follow: false
-        setting1: Value 1
-      - setting2: 200
-      - setting3: true
-      + setting3: null
-      + setting4: blah blah
-      + setting5: {
-            key5: value5
-        }
-        setting6: {
-            doge: {
-              - wow: 
-              + wow: so much
-            }
-            key: value
-          + ops: vops
-        }
-    }
-    group1: {
-      - baz: bas
-      + baz: bars
-        foo: bar
-      - nest: {
-            key: value
-        }
-      + nest: str
-    }
-  - group2: {
-        abc: 12345
-        deep: {
-            id: 45
-        }
-    }
-  + group3: {
-        deep: {
-            id: {
-                number: 45
-            }
-        }
-        fee: 100500
-    }
-}`;
+const expectedResults = {
+  stylish: fs.readFileSync(getFixturePath('resultForStylish.txt'), 'utf-8'),
+  plain: fs.readFileSync(getFixturePath('resultForPlain.txt'), 'utf-8'),
+};
 
-const resultForPlainFormat = `Property 'common.follow' was added with value: false
-Property 'common.setting2' was removed
-Property 'common.setting3' was updated. From true to null
-Property 'common.setting4' was added with value: 'blah blah'
-Property 'common.setting5' was added with value: [complex value]
-Property 'common.setting6.doge.wow' was updated. From '' to 'so much'
-Property 'common.setting6.ops' was added with value: 'vops'
-Property 'group1.baz' was updated. From 'bas' to 'bars'
-Property 'group1.nest' was updated. From [complex value] to 'str'
-Property 'group2' was removed
-Property 'group3' was added with value: [complex value]`;
-
-test('json files with stylish format', () => {
-  expect(genDiff(jsonFile1, jsonFile2, 'stylish')).toEqual(resultForStylishFormat);
+test.each([
+  ['file1.json', 'file2.json', 'stylish'],
+  ['file1.yml', 'file2.yml', 'stylish'],
+])('with stylish formatter', (file1, file2, formatter) => {
+  const rightFile1 = getFixturePath(file1);
+  const rightFile2 = getFixturePath(file2);
+  expect(genDiff(rightFile1, rightFile2, formatter)).toEqual(expectedResults[formatter]);
 });
-test('yaml files stylish format', () => {
-  expect(genDiff(yamlFile1, yamlFile2, 'stylish')).toEqual(resultForStylishFormat);
-});
-test('json files with plain format', () => {
-  expect(genDiff(jsonFile1, jsonFile2, 'plain')).toEqual(resultForPlainFormat);
-});
-test('yaml files with plain format', () => {
-  expect(genDiff(yamlFile1, yamlFile2, 'plain')).toEqual(resultForPlainFormat);
+// их можно объединить, но тогда не будет очевиден вывод какой форматтер сломался
+test.each([
+  ['file1.json', 'file2.json', 'plain'],
+  ['file1.yml', 'file2.yml', 'plain'],
+])('with plain formatter', (file1, file2, formatter) => {
+  const rightFile1 = getFixturePath(file1);
+  const rightFile2 = getFixturePath(file2);
+  expect(genDiff(rightFile1, rightFile2, formatter)).toEqual(expectedResults[formatter]);
 });
 
-test('json files json output format is valid', () => {
-  expect(JSON.parse(genDiff(jsonFile1, jsonFile2, 'json'))).toBeTruthy();
+test.each([
+  ['file1.json', 'file2.json', 'json'],
+  ['file1.yml', 'file2.yml', 'json'],
+])('json output format is valid', (file1, file2, formatter) => {
+  const rightFile1 = getFixturePath(file1);
+  const rightFile2 = getFixturePath(file2);
+  expect(JSON.parse(genDiff(rightFile1, rightFile2, formatter))).toBeTruthy();
 });
-test('yaml files json output format is valid', () => {
-  expect(JSON.parse(genDiff(yamlFile1, yamlFile2, 'json'))).toBeTruthy();
+
+test('with default format', () => {
+  const rightFile1 = getFixturePath('file1.json');
+  const rightFile2 = getFixturePath('file2.json');
+  expect(genDiff(rightFile1, rightFile2)).toEqual(expectedResults.stylish);
 });

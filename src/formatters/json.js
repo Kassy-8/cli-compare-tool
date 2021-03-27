@@ -1,1 +1,1 @@
-export default (diffObject) => JSON.stringify(diffObject);
+export default (diffObject) => JSON.stringify(diffObject, null, 2);

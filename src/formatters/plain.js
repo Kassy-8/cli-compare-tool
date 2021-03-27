@@ -1,13 +1,13 @@
 import _ from 'lodash';
 
-const getDisplayFormat = (displayedValue) => {
-  if (_.isPlainObject(displayedValue)) {
+const getFormattedValue = (value) => {
+  if (_.isPlainObject(value)) {
     return '[complex value]';
   }
-  if (typeof displayedValue === 'string') {
-    return `'${displayedValue}'`;
+  if (typeof value === 'string') {
+    return `'${value}'`;
   }
-  return displayedValue;
+  return value;
 };
 
 const makeDiffRow = (key, type, value, newValue = null) => {
@@ -15,16 +15,49 @@ const makeDiffRow = (key, type, value, newValue = null) => {
     case 'removed':
       return `Property '${key}' was removed`;
     case 'added':
-      return `Property '${key}' was added with value: ${getDisplayFormat(value)}`;
+      return `Property '${key}' was added with value: ${getFormattedValue(value)}`;
     case 'update':
-      return `Property '${key}' was updated. From ${getDisplayFormat(value)} to ${getDisplayFormat(newValue)}`;
+      return `Property '${key}' was updated. From ${getFormattedValue(value)} to ${getFormattedValue(newValue)}`;
     default:
       throw new Error(`unknown type of difference: ${type}`);
   }
 };
 
+const getDiffInPlainFormat = (diffObject, path = []) => {
+  const diffRows = diffObject
+    .filter(({ type }) => type !== 'unchanged')
+    .map(({
+      key,
+      children,
+      type,
+      value,
+      valueBefore,
+      valueAfter,
+    }) => {
+      const currentKeyPath = [...path, key];
+      const keyPathName = currentKeyPath.join('.');
+      switch (type) {
+        case 'removed':
+        case 'added':
+          return makeDiffRow(keyPathName, type, value);
+        case 'update':
+          return makeDiffRow(keyPathName, type, valueBefore, valueAfter);
+        case 'parentNode':
+          return getDiffInPlainFormat(children, currentKeyPath);
+        default:
+          throw new Error(`unknown type of difference: ${type}`);
+      }
+    })
+    .join('\n');
+
+  return diffRows;
+};
+
+export default getDiffInPlainFormat;
+
+/*
 export default (diffAst) => {
-  const formatDiffPlainRecursive = (diffObject, path) => {
+  const formatDiffInPlain = (diffObject, path) => {
     const diffRows = diffObject
       .filter(({ type }) => type !== 'unchanged')
       .map(({
@@ -44,7 +77,7 @@ export default (diffAst) => {
           case 'update':
             return makeDiffRow(keyPathName, type, valueBefore, valueAfter);
           case 'parentNode':
-            return formatDiffPlainRecursive(children, currentKeyPath);
+            return formatDiffInPlain(children, currentKeyPath);
           default:
             throw new Error(`unknown type of difference: ${type}`);
         }
@@ -53,5 +86,7 @@ export default (diffAst) => {
 
     return diffRows;
   };
-  return formatDiffPlainRecursive(diffAst, []);
+
+  return formatDiffInPlain(diffAst, []);
 };
+*/

@@ -9,7 +9,7 @@
     "transform": {}
   },
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules npx jest"
+    "test": "make test"
   },
   "bin": {
     "gendiff": "bin/gendiff.js"
