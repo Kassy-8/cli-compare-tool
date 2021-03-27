@@ -25,9 +25,9 @@ jobs:
         with:
           node-version: ${{matrix.node}}
 
-      - name: npm install
+      - name: install dependencies
         run: |
-          npm ci
+          make install
         env:
           CI: true
       - name: run linter
