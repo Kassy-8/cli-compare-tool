@@ -54,39 +54,3 @@ const getDiffInPlainFormat = (diffObject, path = []) => {
 };
 
 export default getDiffInPlainFormat;
-
-/*
-export default (diffAst) => {
-  const formatDiffInPlain = (diffObject, path) => {
-    const diffRows = diffObject
-      .filter(({ type }) => type !== 'unchanged')
-      .map(({
-        key,
-        children,
-        type,
-        value,
-        valueBefore,
-        valueAfter,
-      }) => {
-        const currentKeyPath = [...path, key];
-        const keyPathName = currentKeyPath.join('.');
-        switch (type) {
-          case 'removed':
-          case 'added':
-            return makeDiffRow(keyPathName, type, value);
-          case 'update':
-            return makeDiffRow(keyPathName, type, valueBefore, valueAfter);
-          case 'parentNode':
-            return formatDiffInPlain(children, currentKeyPath);
-          default:
-            throw new Error(`unknown type of difference: ${type}`);
-        }
-      })
-      .join('\n');
-
-    return diffRows;
-  };
-
-  return formatDiffInPlain(diffAst, []);
-};
-*/
