@@ -6,7 +6,9 @@ extends:
 parserOptions:
   ecmaVersion: 2020
   sourceType: module
+plugins: ["fp"]
 rules:
   no console: 0
   import/extensions: 0
   no-underscore-dangle: [2, { "allow": ["__filename", "__dirname"] }]
+  fp/no-mutation: error
