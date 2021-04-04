@@ -1,12 +1,10 @@
-import path from 'path';
 import yaml from 'js-yaml';
 import _ from 'lodash';
 
-export default (fileData, pathName) => {
+export default (fileData, format) => {
   if (_.isEmpty(fileData)) {
     return {};
   }
-  const format = path.extname(pathName);
   if (format === '.json') {
     return JSON.parse(fileData);
   }

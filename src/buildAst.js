@@ -8,30 +8,34 @@ const nodeTypes = {
   parentNode: 'parentNode',
 };
 
+export const {
+  added, removed, unchanged, update, parentNode,
+} = nodeTypes;
+
 const buildAst = (object1, object2) => {
   const keys = _.union(_.keys(object1), _.keys(object2));
   const diff = _.sortBy(keys)
-    .flatMap((key) => {
+    .map((key) => {
       const valueFromObject1 = object1[key];
       const valueFromObject2 = object2[key];
 
       if (!_.has(object1, key)) {
         const value = valueFromObject2;
-        const type = nodeTypes.added;
+        const type = added;
         return { key, type, value };
       }
       if (!_.has(object2, key)) {
         const value = valueFromObject1;
-        const type = nodeTypes.removed;
+        const type = removed;
         return { key, type, value };
       }
       if (_.isPlainObject(valueFromObject1) && _.isPlainObject(valueFromObject2)) {
-        const type = nodeTypes.parentNode;
+        const type = parentNode;
         const children = buildAst(valueFromObject1, valueFromObject2);
         return { key, type, children };
       }
       if (valueFromObject1 !== valueFromObject2) {
-        const type = nodeTypes.update;
+        const type = update;
         const valueBefore = valueFromObject1;
         const valueAfter = valueFromObject2;
         return {
@@ -42,7 +46,7 @@ const buildAst = (object1, object2) => {
         };
       }
       const value = valueFromObject1;
-      const type = nodeTypes.unchanged;
+      const type = unchanged;
       return { key, type, value };
     });
   return diff;
