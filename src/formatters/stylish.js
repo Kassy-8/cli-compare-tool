@@ -10,16 +10,30 @@ const diffSigns = {
   [parentNode]: ' ',
 };
 
-const filler = '  ';
-const spaceCount = 2;
+const ident = '  ';
+const identsCount = 2;
+
+const makeInnerIdent = (depth) => {
+  if (depth === 0) {
+    return ident;
+  }
+  return `${ident}${ident.repeat(identsCount * depth)}`;
+};
+
+const makeLastBraceIdent = (depth) => {
+  if (depth === 0) {
+    return '';
+  }
+  return ident.repeat(identsCount * depth);
+};
 
 const makeDiffRow = (key, value, diffSign, depth) => {
-  const innerIdent = filler.repeat((spaceCount * depth) - 1);
+  const innerIdent = makeInnerIdent(depth);
   return `${innerIdent}${diffSign} ${key}: ${value}`;
 };
 
 const formatNestedObject = (rows, depth) => {
-  const lastBracerIdent = filler.repeat((spaceCount * depth) - spaceCount);
+  const lastBracerIdent = makeLastBraceIdent(depth);
   return [
     '{',
     ...rows,
@@ -40,7 +54,7 @@ const formatValue = (value, depth) => {
   return formatNestedObject(rows, depth);
 };
 
-const formatDiffStylish = (diffObject, depth = 1) => {
+const formatDiffStylish = (diffObject, depth = 0) => {
   const rows = diffObject
     .map(({
       key,

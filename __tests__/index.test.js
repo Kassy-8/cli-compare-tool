@@ -8,8 +8,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
+const sourceFiles = [
+  ['file1.json', 'file2.json'],
+  ['file1.yml', 'file2.yml'],
+];
+const [jsonFiles, yamlFiles] = sourceFiles;
+
+const formatters = {
+  stylish: 'stylish',
+  plain: 'plain',
+  json: 'json',
+};
+const { stylish, plain, json } = formatters;
+
+const cases = [
+  [jsonFiles, stylish],
+  [yamlFiles, stylish],
+  [jsonFiles, plain],
+  [yamlFiles, plain],
+  [jsonFiles, json],
+  [yamlFiles, json],
+];
+
 const expectedResults = {};
-const sourceFiles = [];
 
 beforeAll(() => {
   const stylishSample = fs.readFileSync(getFixturePath('resultForStylish.txt'), 'utf-8');
@@ -18,36 +39,25 @@ beforeAll(() => {
   const plainSample = fs.readFileSync(getFixturePath('resultForPlain.txt'), 'utf-8');
   // eslint-disable-next-line fp/no-mutation
   expectedResults.plain = plainSample;
-
-  const jsonFile1 = getFixturePath('file1.json');
-  const jsonFile2 = getFixturePath('file2.json');
-  // eslint-disable-next-line fp/no-mutation
-  sourceFiles[0] = [jsonFile1, jsonFile2];
-  const yamlFile1 = getFixturePath('file1.yml');
-  const yamlFile2 = getFixturePath('file2.yml');
-  // eslint-disable-next-line fp/no-mutation
-  sourceFiles[1] = [yamlFile1, yamlFile2];
 });
 
-test.each([
-  [0, 'stylish'],
-  [1, 'stylish'],
-  [0, 'plain'],
-  [1, 'plain'],
-])('with stylish formatter', (sourceIndex, formatter) => {
-  const [file1, file2] = sourceFiles[sourceIndex];
+test.each([0, 1, 2, 3])('with stylish and plain formatters', (caseIndex) => {
+  const [files, formatter] = cases[caseIndex];
+  const file1 = getFixturePath(files[0]);
+  const file2 = getFixturePath(files[1]);
   expect(genDiff(file1, file2, formatter)).toEqual(expectedResults[formatter]);
 });
 
-test.each([
-  [0, 'json'],
-  [1, 'json'],
-])('json output format is valid', (sourceIndex, formatter) => {
-  const [file1, file2] = sourceFiles[sourceIndex];
+test.each([4, 5])('json output format is valid', (caseIndex) => {
+  const [files, formatter] = cases[caseIndex];
+  const file1 = getFixturePath(files[0]);
+  const file2 = getFixturePath(files[1]);
   expect(JSON.parse(genDiff(file1, file2, formatter))).toBeTruthy();
 });
 
 test('with default format', () => {
-  const [file1, file2] = sourceFiles[0];
+  const files = sourceFiles[0];
+  const file1 = getFixturePath(files[0]);
+  const file2 = getFixturePath(files[1]);
   expect(genDiff(file1, file2)).toEqual(expectedResults.stylish);
 });
