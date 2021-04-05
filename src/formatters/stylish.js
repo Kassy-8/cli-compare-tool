@@ -13,19 +13,9 @@ const diffSigns = {
 const ident = '  ';
 const identsCount = 2;
 
-const makeInnerIdent = (depth) => {
-  if (depth === 0) {
-    return ident;
-  }
-  return `${ident}${ident.repeat(identsCount * depth)}`;
-};
+const makeInnerIdent = (depth) => `${ident}${ident.repeat(identsCount * depth)}`;
 
-const makeLastBraceIdent = (depth) => {
-  if (depth === 0) {
-    return '';
-  }
-  return ident.repeat(identsCount * depth);
-};
+const makeLastBraceIdent = (depth) => ident.repeat(identsCount * depth);
 
 const makeDiffRow = (key, value, diffSign, depth) => {
   const innerIdent = makeInnerIdent(depth);
