@@ -1,7 +1,5 @@
 import _ from 'lodash';
-import {
-  added, removed, unchanged, update, parentNode,
-} from '../buildAst.js';
+import nodeTypes from '../nodeTypes.js';
 
 const getFormattedValue = (value) => {
   if (_.isPlainObject(value)) {
@@ -15,11 +13,11 @@ const getFormattedValue = (value) => {
 
 const makeDiffRow = (key, type, value, newValue = null) => {
   switch (type) {
-    case removed:
+    case nodeTypes.removed:
       return `Property '${key}' was removed`;
-    case added:
+    case nodeTypes.added:
       return `Property '${key}' was added with value: ${getFormattedValue(value)}`;
-    case update:
+    case nodeTypes.update:
       return `Property '${key}' was updated. From ${getFormattedValue(value)} to ${getFormattedValue(newValue)}`;
     default:
       throw new Error(`unknown type of difference: ${type}`);
@@ -28,7 +26,7 @@ const makeDiffRow = (key, type, value, newValue = null) => {
 
 const formatDiffPlain = (diffObject, path = []) => {
   const diffRows = diffObject
-    .filter(({ type }) => type !== unchanged)
+    .filter(({ type }) => type !== nodeTypes.unchanged)
     .map(({
       key,
       children,
@@ -40,12 +38,12 @@ const formatDiffPlain = (diffObject, path = []) => {
       const currentKeyPath = [...path, key];
       const keyPathName = currentKeyPath.join('.');
       switch (type) {
-        case removed:
-        case added:
+        case nodeTypes.removed:
+        case nodeTypes.added:
           return makeDiffRow(keyPathName, type, value);
-        case update:
+        case nodeTypes.update:
           return makeDiffRow(keyPathName, type, valueBefore, valueAfter);
-        case parentNode:
+        case nodeTypes.parentNode:
           return formatDiffPlain(children, currentKeyPath);
         default:
           throw new Error(`unknown type of difference: ${type}`);

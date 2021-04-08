@@ -1,13 +1,11 @@
 import _ from 'lodash';
-import {
-  added, removed, unchanged, update, parentNode,
-} from '../buildAst.js';
+import nodeTypes from '../nodeTypes.js';
 
 const diffSigns = {
-  [added]: '+',
-  [removed]: '-',
-  [unchanged]: ' ',
-  [parentNode]: ' ',
+  [nodeTypes.added]: '+',
+  [nodeTypes.removed]: '-',
+  [nodeTypes.unchanged]: ' ',
+  [nodeTypes.parentNode]: ' ',
 };
 
 const ident = '  ';
@@ -17,9 +15,9 @@ const makeInnerIdent = (depth) => `${ident}${ident.repeat(identsCount * depth)}`
 
 const makeLastBraceIdent = (depth) => ident.repeat(identsCount * depth);
 
-const makeDiffRow = (key, value, diffSign, depth) => {
+const makeDiffRow = (key, value, type, depth) => {
   const innerIdent = makeInnerIdent(depth);
-  return `${innerIdent}${diffSign} ${key}: ${value}`;
+  return `${innerIdent}${diffSigns[type]} ${key}: ${value}`;
 };
 
 const formatNestedObject = (rows, depth) => {
@@ -39,7 +37,7 @@ const formatValue = (value, depth) => {
   const rows = Object.entries(value)
     .map(([key, currentValue]) => {
       const innerValue = formatValue(currentValue, depth + 1);
-      return makeDiffRow(key, innerValue, diffSigns[unchanged], depth);
+      return makeDiffRow(key, innerValue, nodeTypes.unchanged, depth);
     });
   return formatNestedObject(rows, depth);
 };
@@ -54,21 +52,20 @@ const formatDiffStylish = (diffObject, depth = 0) => {
       valueBefore,
       valueAfter,
     }) => {
-      const diffSign = diffSigns[type];
       switch (type) {
-        case added:
-        case removed:
-        case unchanged: {
-          return makeDiffRow(key, formatValue(value, depth + 1), diffSign, depth);
+        case nodeTypes.added:
+        case nodeTypes.removed:
+        case nodeTypes.unchanged: {
+          return makeDiffRow(key, formatValue(value, depth + 1), type, depth);
         }
-        case parentNode: {
-          return makeDiffRow(key, formatDiffStylish(children, depth + 1), diffSign, depth);
+        case nodeTypes.parentNode: {
+          return makeDiffRow(key, formatDiffStylish(children, depth + 1), type, depth);
         }
-        case update: {
+        case nodeTypes.update: {
           const currentValueBefore = formatValue(valueBefore, depth + 1);
           const currentValueAfter = formatValue(valueAfter, depth + 1);
-          const rowBefore = makeDiffRow(key, currentValueBefore, diffSigns[removed], depth);
-          const rowAfter = makeDiffRow(key, currentValueAfter, diffSigns[added], depth);
+          const rowBefore = makeDiffRow(key, currentValueBefore, nodeTypes.removed, depth);
+          const rowAfter = makeDiffRow(key, currentValueAfter, nodeTypes.added, depth);
           return `${rowBefore}\n${rowAfter}`;
         }
         default:
